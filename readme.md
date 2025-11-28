@@ -1,33 +1,23 @@
 # RA4. AEE: Creación de un Servicio de Autenticación con ApiRest JWT
 
-**Módulo Profesional:** Desarrollo Web en Entorno Cliente (DWEC)
+**Módulo Profesional:** Desarrollo Web en Entorno Servidor 
 
-## 🎯 Objetivo
-Crear una aplicación web básica que implemente un sistema de autenticación mediante una API RESTful con JWT (simulado con base64_encode para el token y utilizando una estructura simple de usuarios en PHP).
+##  Objetivo
+Crear una web básica con un servicio de autenticación con JWT
 
-## ✨ Características Implementadas
-1.  **Pantalla de Login (`index.html`):** Formulario para introducir Nombre de usuario y Contraseña. Usa `fetch` para enviar credenciales a `/api_login.php`.
-2.  **API RESTful (`api_login.php`):**
-    * Endpoint `/api/login` (simulado por `api_login.php`).
-    * Valida credenciales contra un array PHP predefinido.
-    * Si es correcto, devuelve un token simple (cadena Base64) y redirige a `welcome.html`.
-    * Si es incorrecto, responde con **401 Unauthorized**.
-3.  **Pantalla de Bienvenida (`welcome.html`):**
-    * Acceso protegido, requiere un token en la cabecera `Authorization: Bearer <token>`.
-    * Llama al endpoint `/api_welcome.php` para obtener datos del usuario.
-    * Muestra mensaje de bienvenida, nombre de usuario y hora actual.
-4.  **Pantalla de "No Tienes Permisos" (`forbidden.html`):**
-    * Redirección automática si `/api_welcome.php` responde con **403 Forbidden** (token ausente o inválido).
-5.  **Funcionalidad Cerrar Sesión:**
-    * Botón en `welcome.html` que elimina el token de `localStorage` y redirige a `index.html`.
+## Características Implementadas
+1.  **Pantalla de Login (`index.html`):** Formulario para poner usuario y contraseña
+2.  **API RESTful (`api_login.php`):** Endpoint y validacion de tokens
+3.  **Pantalla de Bienvenida (`welcome.html`):** Acceso protegido y solo accesible tras la validación positiva del token proporcionado
+4.  **Pantalla de "No Tienes Permisos" (`forbidden.html`):** Redirección automática a prohibido
+5.  **Funcionalidad Cerrar Sesión:** Botón que elimina el token y vuelve al login
 
-## ⚙️ Requisitos Técnicos
-* **API PHP:** Uso de `json_encode` para respuestas JSON.
-* **Manejo de Sesiones en Cliente:** `localStorage` para almacenar y recuperar el token. Envío del token en la cabecera `Authorization: Bearer <token>`.
-* **Validación:** Array predefinido de usuarios en PHP.
-* **Redirecciones en Cliente:** Manejo de códigos de error HTTP **401/403** para redirigir a las pantallas correspondientes.
+## Requisitos Técnicos
+* **API PHP:**Uso de JSON encode para las respuestas de JSON
+* **Manejo de Sesiones en Cliente:** Uso de localstorage para guardar el token y de la cabecera autorización
+* **Validación:** Array para los usuarios (admin y user)
+* **Redirecciones en Cliente:** Manejo de código de error y redirecciones
 
-## 🚀 Uso
-1.  Asegúrate de tener un servidor web local (como XAMPP, Laragon, o un servidor PHP simple) configurado para ejecutar los archivos PHP.
-2.  Coloca todos los archivos en el directorio raíz de tu servidor.
-3.  Accede a `index.html` en tu navegador.
+##  Uso
+1.  Servidor Xampp para vista de archivos php
+2.  Inicia tu navegador sustituyendo dashboard por el nombre de la carpeta raiz y en el siguiente ramal el archivo que desee.

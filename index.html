@@ -6,7 +6,7 @@
 </head>
 <body>
 
-    <h2>👤 Iniciar Sesión</h2>
+    <h2>Iniciar Sesión</h2>
     <form id="loginForm">
         <label for="username">Nombre de usuario:</label><br>
         <input type="text" id="username" name="username" required><br><br>
@@ -14,10 +14,9 @@
         <label for="password">Contraseña:</label><br>
         <input type="password" id="password" name="password" required><br><br>
 
-        <button type="submit">Entrar</button>
+        <button type="submit">Entrar a la página</button>
     </form>
 
-    <p id="message" style="color: red;"></p>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(event) {
@@ -26,7 +25,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // 1. Enviar credenciales a la API RESTful usando fetch
+            // 1. Enviar información a la API usando el método fetch
             fetch('api_login.php', {
                 method: 'POST',
                 headers: {
@@ -35,32 +34,32 @@
                 body: JSON.stringify({ username: username, password: password })
             })
             .then(response => {
-                // Si las credenciales son incorrectas (401), manejar el error
+                // Direccionado si la clave es incorrecta
                 if (!response.ok) {
                     if (response.status === 401) {
                         return response.json().then(data => {
-                            throw new Error(data.error || 'Credenciales incorrectas');
+                            throw new Error(data.error || 'Los datos son incorrectos');
                         });
                     }
-                    throw new Error('Error en el servidor al intentar iniciar sesión.');
+                    throw new Error('Error de inicio en el servidor');
                 }
-                // Si la respuesta es exitosa (200), procesar el JSON
+                // Si el usuario y contraseña es correcto enviarlo al JSON
                 return response.json();
             })
             .then(data => {
                 if (data.token) {
-                    // 2. Almacenar el token en localStorage
+                    // Almaceno el token en localStorage
                     localStorage.setItem('authToken', data.token);
-                    // 3. Redirigir a la pantalla de bienvenida
+                    // Redirijo a la pantalla de bienvenida
                     window.location.href = 'welcome.html';
                 } else {
-                    document.getElementById('message').textContent = 'Error: No se recibió token.';
+                    document.getElementById('message').textContent = 'Token no recibido';
                 }
             })
             .catch(error => {
-                console.error('Login error:', error);
+                console.error('Error de Login:', error);
                 document.getElementById('message').textContent = 'Error de autenticación: ' + error.message;
-                // Asegurarse de limpiar el token si hubo un error por si acaso
+                //Limpiado del token por si se produce algún error
                 localStorage.removeItem('authToken');
             });
         });

@@ -6,8 +6,7 @@
 </head>
 <body>
 
-    <h2>🎉 ¡Bienvenido!</h2>
-    <h3 id="welcomeMessage">Cargando...</h3>
+    <h2>Bienvenido!</h2>
     <p id="usernameDisplay"></p>
     <p id="timeDisplay"></p>
 
@@ -15,28 +14,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Obtener el token almacenado [cite: 85]
+            // Obtengo el token almacenado
             const token = localStorage.getItem('authToken');
 
-            // 2. Si no hay token, redirigir al login
+            // Si no hay token, redirigir
             if (!token) {
-                // Si no está autenticado, redirige al login, que a su vez maneja la redirección
+                // Si no está autenticado, redirige al index
                 window.location.href = 'index.html'; 
                 return;
             }
 
-            // 3. Llamar al endpoint protegido de la API (/api/welcome) [cite: 64, 65]
+            // llama al endpoint con una llamada get
             fetch('api_welcome.php', {
                 method: 'GET',
                 headers: {
-                    // Enviar el token en la cabecera Authorization: Bearer <token> [cite: 86]
+                    //Envio el token a la cabecera de autenticación
                     'Authorization': `Bearer ${token}`
                 }
             })
             .then(response => {
-                // Manejar la respuesta del servidor (403 Forbidden) [cite: 68, 94]
+                // Manejo la respuesta en el servidor
                 if (response.status === 403) {
-                    // Redirigir a la pantalla de "No Tienes Permisos" [cite: 69]
+                    // Redifur a página prohibida
                     window.location.href = 'forbidden.html';
                     return Promise.reject('Token inválido o caducado, acceso denegado.');
                 }
@@ -46,20 +45,20 @@
                 return response.json();
             })
             .then(data => {
-                // 4. Mostrar los datos del usuario [cite: 62, 63]
+                // Muestro datos del usuario
                 if (data.status === 'ok') {
-                    document.getElementById('welcomeMessage').textContent = '¡Qué alegría verte de nuevo!'; // Mensaje de bienvenida adicional [cite: 63]
+                    document.getElementById('welcomeMessage').textContent = '¡Qué alegría verte de nuevo!'; 
                     document.getElementById('usernameDisplay').textContent = 
-                        `Usuario autenticado: ${data.username}`; // Mensaje personalizado con nombre [cite: 62]
+                        `Usuario autenticado: ${data.username}`; // Mensaje personalizado con el nombre 
                     document.getElementById('timeDisplay').textContent = 
-                        `Hora actual del servidor: ${data.current_time}`; // Hora actual [cite: 62]
+                        `Hora actual del servidor: ${data.current_time}`; // Hora actual 
                 } else {
                     document.getElementById('welcomeMessage').textContent = 'Error al cargar los datos de bienvenida.';
                 }
             })
             .catch(error => {
                 console.error('Error al acceder a la API protegida:', error);
-                // Si hay un error, por seguridad, eliminamos el token y redirigimos
+                // Si hay un error elimino el token
                 if (error !== 'Token inválido o caducado, acceso denegado.') {
                     localStorage.removeItem('authToken');
                     window.location.href = 'index.html'; 
@@ -67,11 +66,11 @@
             });
         });
 
-        // 5. Funcionalidad para Cerrar Sesión [cite: 70]
+        //Cerrar sesión
         function logout() {
-            // Eliminar el token almacenado en el cliente (localStorage) [cite: 72]
+            //Elimino el token del localStorage
             localStorage.removeItem('authToken');
-            // Redirigir al usuario a la pantalla de login [cite: 72]
+            // Redirigir al usuario al login
             window.location.href = 'index.html';
         }
     </script>

@@ -1,14 +1,14 @@
 <?php
-// POST /api/login: Valida credenciales y devuelve un token. [cite: 80]
+//Método post que valida las credenciales
 header('Content-Type: application/json');
 
-// 1. Array predefinido de usuarios para simular la BDD [cite: 88, 89, 90, 91]
+// Array para la simulación de la base de datos
 $usuarios = [
     ["username" => "admin", "password" => "1234"],
     ["username" => "user", "password" => "abcd"]
 ];
 
-// 2. Recibir los datos del formulario (JSON)
+// Recibo de datos del formularion con JSON
 $input_data = json_decode(file_get_contents("php://input"), true);
 
 $username = $input_data['username'] ?? '';
@@ -22,24 +22,23 @@ foreach ($usuarios as $user) {
     }
 }
 
-// 3. Validar credenciales [cite: 57]
+// Valido los datos
 if (!$authenticated_user) {
-    // 4. Si son incorrectas, responder con 401 Unauthorized [cite: 59]
+    // Si es incorrecto da error
     http_response_code(401);
     echo json_encode(["error" => "Credenciales incorrectas. Usuario o contraseña no válidos."]);
     exit;
 }
 
-// 5. Generar un "token" (cadena generada con base64_encode para simular JWT) [cite: 58]
-// En un entorno real se usaría una librería JWT. Aquí es una simulación simple.
+// Genero un token
 $payload = json_encode([
     'username' => $authenticated_user['username'],
     'iat' => time(),
-    'exp' => time() + (3600 * 24) // Expira en 24 horas
+    'exp' => time() + (3600 * 24) //Deja de sar válido tras 24 horas
 ]);
-$token = base64_encode($payload); // Token simple [cite: 58]
+$token = base64_encode($payload); // Token simple 
 
-// 6. Responder con el token [cite: 58]
+// Respondo con el token
 http_response_code(200);
 echo json_encode([
     "message" => "Autenticación exitosa",
