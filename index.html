@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login de Usuario</title>
+</head>
+<body>
+
+    <h2>👤 Iniciar Sesión</h2>
+    <form id="loginForm">
+        <label for="username">Nombre de usuario:</label><br>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Contraseña:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p id="message" style="color: red;"></p>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // 1. Enviar credenciales a la API RESTful usando fetch
+            fetch('api_login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username, password: password })
+            })
+            .then(response => {
+                // Si las credenciales son incorrectas (401), manejar el error
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Credenciales incorrectas');
+                        });
+                    }
+                    throw new Error('Error en el servidor al intentar iniciar sesión.');
+                }
+                // Si la respuesta es exitosa (200), procesar el JSON
+                return response.json();
+            })
+            .then(data => {
+                if (data.token) {
+                    // 2. Almacenar el token en localStorage
+                    localStorage.setItem('authToken', data.token);
+                    // 3. Redirigir a la pantalla de bienvenida
+                    window.location.href = 'welcome.html';
+                } else {
+                    document.getElementById('message').textContent = 'Error: No se recibió token.';
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                document.getElementById('message').textContent = 'Error de autenticación: ' + error.message;
+                // Asegurarse de limpiar el token si hubo un error por si acaso
+                localStorage.removeItem('authToken');
+            });
+        });
+
+        // Comprobar si ya hay un token y si lo hay, redirigir a bienvenida
+        if (localStorage.getItem('authToken')) {
+            window.location.href = 'welcome.html';
+        }
+    </script>
+
+</body>
+</html>

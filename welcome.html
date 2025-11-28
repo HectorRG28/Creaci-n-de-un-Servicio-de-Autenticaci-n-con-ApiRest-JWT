@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido</title>
+</head>
+<body>
+
+    <h2>🎉 ¡Bienvenido!</h2>
+    <h3 id="welcomeMessage">Cargando...</h3>
+    <p id="usernameDisplay"></p>
+    <p id="timeDisplay"></p>
+
+    <button onclick="logout()">Cerrar Sesión</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Obtener el token almacenado [cite: 85]
+            const token = localStorage.getItem('authToken');
+
+            // 2. Si no hay token, redirigir al login
+            if (!token) {
+                // Si no está autenticado, redirige al login, que a su vez maneja la redirección
+                window.location.href = 'index.html'; 
+                return;
+            }
+
+            // 3. Llamar al endpoint protegido de la API (/api/welcome) [cite: 64, 65]
+            fetch('api_welcome.php', {
+                method: 'GET',
+                headers: {
+                    // Enviar el token en la cabecera Authorization: Bearer <token> [cite: 86]
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                // Manejar la respuesta del servidor (403 Forbidden) [cite: 68, 94]
+                if (response.status === 403) {
+                    // Redirigir a la pantalla de "No Tienes Permisos" [cite: 69]
+                    window.location.href = 'forbidden.html';
+                    return Promise.reject('Token inválido o caducado, acceso denegado.');
+                }
+                if (!response.ok) {
+                    throw new Error('Error al obtener datos del usuario.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 4. Mostrar los datos del usuario [cite: 62, 63]
+                if (data.status === 'ok') {
+                    document.getElementById('welcomeMessage').textContent = '¡Qué alegría verte de nuevo!'; // Mensaje de bienvenida adicional [cite: 63]
+                    document.getElementById('usernameDisplay').textContent = 
+                        `Usuario autenticado: ${data.username}`; // Mensaje personalizado con nombre [cite: 62]
+                    document.getElementById('timeDisplay').textContent = 
+                        `Hora actual del servidor: ${data.current_time}`; // Hora actual [cite: 62]
+                } else {
+                    document.getElementById('welcomeMessage').textContent = 'Error al cargar los datos de bienvenida.';
+                }
+            })
+            .catch(error => {
+                console.error('Error al acceder a la API protegida:', error);
+                // Si hay un error, por seguridad, eliminamos el token y redirigimos
+                if (error !== 'Token inválido o caducado, acceso denegado.') {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'index.html'; 
+                }
+            });
+        });
+
+        // 5. Funcionalidad para Cerrar Sesión [cite: 70]
+        function logout() {
+            // Eliminar el token almacenado en el cliente (localStorage) [cite: 72]
+            localStorage.removeItem('authToken');
+            // Redirigir al usuario a la pantalla de login [cite: 72]
+            window.location.href = 'index.html';
+        }
+    </script>
+
+</body>
+</html>
